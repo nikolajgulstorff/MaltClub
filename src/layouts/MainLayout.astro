@@ -8,67 +8,110 @@ const { title } = Astro.props;
 
 ---
 <html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="preconnect" href="https://fonts.googleapis.com">
-		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-		<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
-		<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&family=Urbanist:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>{Astro.props.title}</title>
-	</head>
-	<body>
-		<AgeVerification />
-		<div class="relative w-full overflow-hidden bg-neutral-500">
-			<svg id="svg-mask" class="absolute top-0 left-0 w-full h-full">
-				<defs>
-					<clipPath id="clip">
-						<circle cx="20%" cy="20%" r="0" id="circle-mask" />
-					</clipPath>
-				</defs>
-			</svg>
-			<div class="relative top-0 left-0 bg-gradient-to-r from-[#16312B] to-[#0C1C19] transition-all duration-300 ease-out " style="clip-path: url(#clip)">
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&family=Urbanist:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{Astro.props.title}</title>
+  </head>
 
-		<header >
-			<Header></Header>
-		</header>
-		
-		<main>
-		
-			
-			<slot></slot>
-		</main>
+  <body>
+    <AgeVerification />
+    <div class="relative w-full overflow-hidden bg-neutral-700">
+      <svg id="svg-mask" class="absolute top-0 left-0 w-full h-full">
+        <defs>
+          <clipPath id="clip">
+            <circle cx="50%" cy="100%" r="0" id="circle-mask" />
+          </clipPath>
+        </defs>
+      </svg>
+      <div class="relative top-0 left-0 bg-gradient-to-r from-[#16312B] to-[#0C1C19] transition-all duration-300 ease-out " style="clip-path: url(#clip)">
+        <header>
+          <Header></Header>
+        </header>
 
-		<footer>
-			<Footer></Footer>
-		</footer>
-	</div>
-</div>
+        <main>
+          <slot></slot>
+        </main>
 
-	</body>
-</html>
+        <footer>
+          <Footer></Footer>
+        </footer>
+      </div>
+    </div>
+  </body>
 
-<script>
-	 import { animate, inView } from "motion";
-    
-    inView(".content", () => {
-      animate(".content", { opacity: [0, 1] }, { duration: 2 });
-    });
-
-	window.addEventListener('load', () => {
+  <script>
+  import { animate, inView } from "motion";
+  
+  inView(".content", () => {
+    animate(".content", { opacity: [0, 1] }, { duration: 2 });
+  });
+  
+  window.addEventListener('load', () => {
     const circleMask = document.getElementById('circle-mask');
-
-    // Animate the circle radius using Motion One
+    
+    // Define the center and radius
+    const centerX = 50;  // Center of the circle (in percentage)
+    const centerY = 20;  // Center of the circle (in percentage)
+    const radius = 10;   // Radius in percentage
+    let angle = 0;       // Initial angle (in radians)
+    
+    // Animate the circle by first scaling it slightly
     animate(circleMask, 
-        { r: ['0', '150%'] },  // Start with radius 0 and animate to 150%
-        {
-            duration: 2.8,      // Animation duration of 2.8 seconds
-            ease: 'ease-out',   // Easing function
-            fill: 'forwards'    // Keep the final state after animation
+      { 
+        r: ['0', '10%'],  // Start with radius 0, then scale to 10% size
+      },
+      {
+        duration: 0.5,      // Duration of the scaling animation
+        ease: 'ease-out',
+      });
+
+    // Use setTimeout to delay the movement by 1.4 seconds (the duration of the scaling animation)
+    setTimeout(() => {
+      // Animate circular motion continuously using requestAnimationFrame
+      function animateCircularMotion() {
+        // Calculate the new position based on the angle
+        const cx = centerX + radius * Math.cos(angle);  // X position (percentage)
+        const cy = centerY + radius * Math.sin(angle);  // Y position (percentage)
+
+        // Update the circle's position
+        animate(circleMask, 
+          { 
+            cx: `${cx}%`,  // Update horizontal position (in percentage)
+            cy: `${cy}%`,  // Update vertical position (in percentage)
+          },
+          {
+            duration: 0.0005,       // Shortened duration for faster movement
+            ease: 'linear',        // Smooth and continuous movement
+          });
+
+        // Increment the angle for continuous movement
+        angle += 0.07;  // Increased angle increment for faster rotation
+
+        // Continue the animation
+        if (angle <= 2 * Math.PI) {
+          requestAnimationFrame(animateCircularMotion);
+        } else {
+          // Once the full circle is completed, stop and scale to full size
+          animate(circleMask, 
+            { r: ['10%', '150%'] },  // Scale from 10% to 150%
+            {
+              duration: 1.0,        // Slightly reduced scaling duration
+              ease: 'ease-in',      // Use ease-in for the second scaling
+              fill: 'forwards',     // Keep the final state after animation
+            });
         }
-    );
-});
-</script>
+      }
+  
+		// Start the continuous animation
+		animateCircularMotion();
+	  },
+	)});
+  </script>
