@@ -70,7 +70,7 @@ const { title } = Astro.props;
       },
       {
         duration: 0.5,      // Duration of the scaling animation
-        ease: 'ease-out',
+        
       });
 
     // Use setTimeout to delay the movement by 1.4 seconds (the duration of the scaling animation)
@@ -89,7 +89,7 @@ const { title } = Astro.props;
           },
           {
             duration: 0.0005,       // Shortened duration for faster movement
-            ease: 'linear',        // Smooth and continuous movement
+                // Smooth and continuous movement
           });
 
         // Increment the angle for continuous movement
@@ -105,7 +105,7 @@ const { title } = Astro.props;
             {
               duration: 1.0,        // Slightly reduced scaling duration
               ease: 'ease-in',      // Use ease-in for the second scaling
-              fill: 'forwards',     // Keep the final state after animation
+             // Keep the final state after animation
             });
         }
       }
